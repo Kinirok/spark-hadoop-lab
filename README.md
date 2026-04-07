@@ -19,5 +19,5 @@
 - docker exec spark-master python3 /opt/spark-apps/spark_app.py exp4_3dn_opt true true
 - docker compose --profile multi-dn down
 4. Графики
-- python analyze_results.py
-![График]([https://github.com/jon/coolproject/raw/master/image/image.png](https://github.com/Kinirok/spark-hadoop-lab/blob/main/performance_analysis.png))
+- python analyze_results.py \\
+![График](https://github.com/jon/coolproject/raw/master/image/image.png](https://github.com/Kinirok/spark-hadoop-lab/blob/main/performance_analysis.png))
