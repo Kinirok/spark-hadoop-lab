@@ -1,40 +1,23 @@
-Порядок команд для запуска:
-
+# Порядок команд для запуска
+1. Создание директории для результатов и генерация датасета
 - mkdir -p results
-
 - python generate_data.py
-
-
+2. Первые два эксперимента с одним datanode
 - docker compose up -d namenode datanode1 spark-master spark-worker
-
 - docker exec namenode hdfs dfs -mkdir -p /user/data
 - docker cp data/sales_dataset.csv namenode:/tmp/
 - docker exec namenode hdfs dfs -put -f /tmp/sales_dataset.csv /user/data/
-
 - docker exec -it spark-master bash -c "apt-get update && apt-get install -y python3-pip && pip3 install pyspark==3.5.0"
 - docker exec spark-master python3 /opt/spark-apps/spark_app.py exp1_1dn_spark false true
-
-
 - docker exec spark-master python3 /opt/spark-apps/spark_app.py exp2_1dn_opt true true
-
 - docker compose down
-
-
+3. Вторые два эксперимента уже с тремя datanode
 - docker compose --profile multi-dn up -d namenode datanode1 datanode2 datanode3 spark-master spark-worker
-
-
-
 - docker exec namenode hdfs dfs -setrep -R 3 /user/data
-
-
 - docker exec -it spark-master bash -c "apt-get update && apt-get install -y python3-pip && pip3 install pyspark==3.5.0"
 - docker exec spark-master python3 /opt/spark-apps/spark_app.py exp3_3dn_spark false true
-
-
-
 - docker exec spark-master python3 /opt/spark-apps/spark_app.py exp4_3dn_opt true true
-
 - docker compose --profile multi-dn down
-
-
+4. Графики
 - python analyze_results.py
+![График](https://github.com/jon/coolproject/raw/master/image/image.png](https://github.com/Kinirok/spark-hadoop-lab/blob/main/performance_analysis.png)
