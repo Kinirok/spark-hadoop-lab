@@ -21,4 +21,4 @@
 4. Графики
 - python analyze_results.py
 
-![Image alt](https://github.com/jon/coolproject/raw/master/image/image.png](https://github.com/Kinirok/spark-hadoop-lab/blob/main/performance_analysis.png))
+![Image alt](https://github.com/Kinirok/spark-hadoop-lab/raw/main/performance_analysis.png)
