@@ -1,0 +1,99 @@
+
+
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: always
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    environment:
+      - CLUSTER_NAME=test
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HDFS_CONF_dfs_block_size=134217728
+      - HDFS_CONF_dfs_replication=1
+    volumes:
+      - ./hdfs-data/namenode:/hadoop/dfs/name
+    networks:
+      - hadoop-net
+
+  datanode1:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode1
+    restart: always
+    ports:
+      - "9864:9864"
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - SERVICE_PRECONDITION=namenode:9870
+    volumes:
+      - ./hdfs-data/datanode1:/hadoop/dfs/data
+    networks:
+      - hadoop-net
+
+  datanode2:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode2
+    restart: always
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - SERVICE_PRECONDITION=namenode:9870
+    volumes:
+      - ./hdfs-data/datanode2:/hadoop/dfs/data
+    networks:
+      - hadoop-net
+    profiles:
+      - multi-dn
+
+  datanode3:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode3
+    restart: always
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - SERVICE_PRECONDITION=namenode:9870
+    volumes:
+      - ./hdfs-data/datanode3:/hadoop/dfs/data
+    networks:
+      - hadoop-net
+    profiles:
+      - multi-dn
+
+  spark-master:
+    image: apache/spark:3.5.3
+    container_name: spark-master
+    user: root
+    ports:
+      - "9090:8080"
+      - "4040:4040"
+      - "7077:7077"
+    environment:
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master && apt-get update && apt-get install -y python3-pip && pip3 install pyspark==3.5.0
+    volumes:
+      - ./:/opt/spark-apps
+    networks:
+      - hadoop-net
+
+  spark-worker:
+    image: apache/spark:3.5.3
+    container_name: spark-worker
+    user: root
+    environment:
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=2G
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    volumes:
+      - ./:/opt/spark-apps
+    depends_on:
+      - spark-master
+    networks:
+      - hadoop-net
+    deploy:
+      replicas: 1
+
+networks:
+  hadoop-net:
+    driver: bridge
