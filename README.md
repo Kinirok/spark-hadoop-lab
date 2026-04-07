@@ -21,4 +21,6 @@
 4. Графики
 - python analyze_results.py
 
+Замеры производил для датасета на 500000 строк, для 100000 ускорения не было.
+
 ![Image alt](https://github.com/Kinirok/spark-hadoop-lab/raw/main/performance_analysis.png)
